@@ -1,0 +1,24 @@
+{
+  "entrypoint": "ufg-eventos.html",  
+  "extraDependencies": [
+    "bower_components/webcomponentsjs/*.js"
+  ],
+  "lint": {
+    "rules": [
+      "polymer-2-hybrid"
+    ]
+  },
+  "builds": [
+    {
+      "js": {
+        "minify": true
+      },
+      "css": {
+        "minify": true
+      },
+      "html": {
+        "minify": true
+      }
+    }
+  ]
+}

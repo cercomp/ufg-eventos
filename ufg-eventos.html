@@ -1,0 +1,229 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/app-datepicker/app-datepicker.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="/bower_components/iron-image/iron-image.html">
+<link rel="import" href="/bower_components/moment-element/moment-element.html">
+<link rel="import" href="/bower_components/moment-element/moment-with-locales-import.html">
+<link rel="import" href="/bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="/bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
+
+<custom-style>
+  <style is="custom-style" include="demo-pages-shared-styles">
+
+  </style>
+</custom-style>
+<dom-module id="ufg-eventos">
+  <template>
+
+    <style>
+       :host {
+        display: block;
+        background: var(--event-bg,#eeeeee);
+      }
+
+      app-datepicker {
+        margin: 8px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        display: var(--layout-vertical);
+      }
+
+      .item {
+        @apply --layout-horizontal;
+        padding: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        margin-bottom: 10px;
+      }
+
+      a {
+        text-decoration: none;
+      }
+
+      .list {
+        padding-top: 10px;
+        max-width: 800px;
+        margin: auto;
+        /*margin-top: 10px;*/
+        /*margin-bottom: 60px;*/
+        border-bottom: 1px solid #ddd;
+      }
+
+      .folder {
+        min-height: 100px;
+        min-width: 100px;
+        box-sizing: border-box;
+        background-color: #DDD;
+      }
+
+      .pad {
+        padding: 0 16px;
+        @apply --layout-flex;
+        @apply --layout-vertical;
+      }
+
+      .primary {
+        font-size: 16px;
+        font-weight: bold;
+        color: #777;
+      }
+
+      .shortText {
+        font-size: 14px;
+        color: #888;
+      }
+
+      .title {
+        font-weight: bold;
+      }
+
+      @media (max-width: 600px) {
+        .primary {
+          font-size: 14px;
+        }
+
+        .shortText {
+          font-size: 12px;
+        }
+      }
+
+      paper-spinner {
+        position: absolute;
+        /*display: none;*/
+      }
+
+      .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+    <!--headers='{"cache-control": "max-age=0"}'-->
+    <iron-ajax id="requestEvents" auto url="https://my-json-proxy.herokuapp.com" loading="{{loading}}" params='[[_getMonthEvents(month)]]'
+      last-response="{{eventsResponse}}" on-response="_handleResponse" debounce-duration="300"></iron-ajax>
+
+    <iron-ajax id="request" auto url="https://my-json-proxy.herokuapp.com" loading="{{loading}}" params='{{_getParams(staticDate)}}'
+      last-response="{{lastResponse}}" debounce-duration="300"></iron-ajax>
+
+    <div class="center">
+      <app-datepicker id="appDatepicker" events="{{eventsResponse.events}}" locale="pt-BR" disable-days="[[disableDays]]" date="{{staticDate}}"
+        auto-update-date="true" format="yyyy-mm-dd"></app-datepicker>
+    </div>
+
+    <div class="center">
+      <paper-spinner active$="{{loading}}"></paper-spinner>
+    </div>
+
+    <template is="dom-if" if="{{hasEvents(lastResponse.events)}}">
+      <p class="center">{{lastResponse.meta.total}} evento(s) encontrado(s)</p>
+    </template>
+
+    <template is="dom-if" if="{{!hasEvents(lastResponse.events)}}">
+      <p class="center">Nenhum evento encontrado!</p>
+    </template>
+
+    <template is="dom-repeat" items="{{lastResponse.events}}" as="blog">
+      <div class="list">
+        <a href="https://www.ufg.br/e/[[blog.slug]]" class="item">
+          <iron-image class="folder" sizing="cover" src$="https://www.ufg.br/[[blog.image]]"></iron-image>
+          <div class="pad">
+            <div class="primary">[[blog.name]]</div>
+            <div class="shortText"><span class="title">Data:</span> [[formatDate(blog.begin_at)]]</div>
+            <div class="shortText" hidden$="[[!blog.end_at]]"><span class="title">Termina:</span> [[formatDate(blog.end_at)]]</div>
+            <div class="shortText"><span class="title">Local:</span> [[blog.place]]</div>
+          </div>
+        </a>
+      </div>
+    </template>
+
+
+  </template>
+
+  <script>
+    moment.locale('pt-BR');
+    /**
+     * `ufg-eventos`
+     * Lista todos os eventos da UFG - Universidade Federal de Goiás
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class UfgEventos extends Polymer.Element {
+      static get is() { return 'ufg-eventos'; }
+      static get properties() {
+        return {
+          disableDays: {
+            type: Array,
+            value: function () {
+              return [];
+            }
+          },
+          lastResponse: {
+            type: Object
+          },
+          month: {
+            type: String,
+            value: moment().month()
+          }
+        };
+      }
+
+      ready() {
+        super.ready();
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+
+        window.addEventListener('_activeMonthYear', (e) => {
+
+          window.addEventListener('monthChange', () => {
+
+            this.lastResponse = this.eventsResponse;
+            window.removeEventListener('monthChange', null);
+          });
+          this.month = this.$.appDatepicker._activeMonth;
+
+          // this.$.requestEvents.generateRequest();
+        });
+      }
+
+      _getParams(staticDate) {
+        // this.$.requestEvents.generateRequest();
+        // console.log(this.$.appDatepicker._activeMonth);
+        var url = `https://www.ufg.br/events.json?start=${staticDate}&end=${staticDate}&direction=desc&sort=calendar_events.created_at&tags=destaque`;
+        return { url: url };
+      }
+
+      _getMonthEvents(month) {
+        let year = this.$.appDatepicker._activeYear;
+        // let month = this.$.appDatepicker._activeMonth;
+        // console.log(moment().year(year))
+        //  console.log("mass",moment().year(year).month(month).date(1).format("YYYY-MM-DD"));
+        let intDate = moment().year(year).month(month).date(1).format("YYYY-MM-DD");
+        let endDate = moment().year(year).month(month).endOf("month").format("YYYY-MM-DD");
+        var url = `https://www.ufg.br/events.json?start=${intDate}&end=${endDate}&tags=destaque&page=1&per_page=50`;
+        return { url: url };
+      }
+
+      formatDate(date) {
+        // console.log(moment("ago de 2014").format('LLLL'))
+        return moment(date).format('LLLL');
+      }
+
+      hasEvents(events) {
+        return events.length > 0
+      }
+
+      _handleResponse(e) {
+        // this.lastResponse= e.detail.response;
+        window.dispatchEvent(new CustomEvent('monthChange'));
+      }
+    }
+
+    window.customElements.define(UfgEventos.is, UfgEventos);
+  </script>
+</dom-module>
