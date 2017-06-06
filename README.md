@@ -17,4 +17,4 @@ Example Usage:
 ```
 -->
 ```html
-<ufg-eventos state="square" ></ufg-eventos>
+<ufg-eventos></ufg-eventos>
