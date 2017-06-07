@@ -7,18 +7,16 @@
 <link rel="import" href="/bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="/bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
 
-<custom-style>
-  <style is="custom-style" include="demo-pages-shared-styles">
-
-  </style>
-</custom-style>
 <dom-module id="ufg-eventos">
   <template>
 
-    <style>
+    <style is="custom-style">
        :host {
         display: block;
         background: var(--event-bg,#eeeeee);
+        font-family: 'Roboto', 'Noto', sans-serif;
+        font-size: 14px;        
+        background-color: #fafafa;
       }
 
       app-datepicker {
@@ -177,6 +175,8 @@
 
       connectedCallback() {
         super.connectedCallback();
+        console.log(this.rootPath);
+        console.log(this.importPath);
 
         window.addEventListener('_activeMonthYear', (e) => {
 
@@ -193,7 +193,6 @@
 
       _getParams(staticDate) {
         // this.$.requestEvents.generateRequest();
-        // console.log(this.$.appDatepicker._activeMonth);
         var url = `https://www.ufg.br/events.json?start=${staticDate}&end=${staticDate}&direction=desc&sort=calendar_events.created_at&tags=destaque`;
         return { url: url };
       }
