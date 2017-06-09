@@ -5,6 +5,11 @@
 <link rel="import" href="/bower_components/moment-element/moment-element.html">
 <link rel="import" href="/bower_components/moment-element/moment-with-locales-import.html">
 <link rel="import" href="/bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="/bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="/bower_components/paper-card/paper-card.html">
 <link rel="import" href="/bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
 
 <dom-module id="ufg-eventos">
@@ -13,9 +18,9 @@
     <style is="custom-style">
        :host {
         display: block;
-        background-color: var(--event-bg,#fafafa);
+        background-color: var(--event-bg, #fafafa);
         font-family: 'Roboto', 'Noto', sans-serif;
-        font-size: 14px;        
+        font-size: 14px;
       }
 
       app-datepicker {
@@ -29,19 +34,20 @@
 
       .item {
         @apply --layout-horizontal;
+        @apply --layout-flex;
         padding: 20px;
-        background-color: var(--event-item-bg,white);                
+        background-color: var(--event-item-bg, white);
         border: 1px solid #ddd;
         cursor: pointer;
         margin-bottom: 10px;
       }
-      
+
       .item:hover {
         background: #f5f5f5;
       }
 
       a {
-        text-decoration: none;
+        text-decoration: none !important;
       }
 
       .list {
@@ -63,7 +69,11 @@
       .pad {
         padding: 0 16px;
         @apply --layout-flex;
-        @apply --layout-vertical;
+      }
+
+
+      .pad div {
+        padding: 3px 0;
       }
 
       .primary {
@@ -81,6 +91,16 @@
         font-weight: bold;
       }
 
+      paper-spinner {
+        position: absolute;
+      }
+
+      .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
       @media (max-width: 600px) {
         .primary {
           font-size: 14px;
@@ -89,17 +109,66 @@
         .shortText {
           font-size: 12px;
         }
+
+        .item {
+          @apply --layout-vertical;
+          padding: 0px;
+        }
+
+        .pad {
+          padding: 10px 10px;
+        }
+
+        .folder {
+          min-height: 115px;
+        }
+
+        #selector {
+          display: none;
+        }
       }
 
-      paper-spinner {
-        position: absolute;
-        /*display: none;*/
+      paper-button {
+        color: #666;
+        font-weight: bold;
+        text-transform: none;
       }
 
-      .center {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+      iron-selector {
+        @apply --layout-horizontal;
+        @apply(--layout-center-justified);
+      }
+
+      iron-selector paper-button {
+        opacity: .7;
+      }
+
+      iron-selector paper-button.iron-selected {
+        opacity: 1;
+        box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
+        /*color: #009688;*/
+      }
+
+      .cards {
+        @apply(--layout-horizontal);
+        @apply(--layout-around-justified);
+        @apply(--layout-wrap);
+        height: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      paper-card {
+        margin: 10px;
+        max-width: 31%;
+        --paper-card-header-image: {
+          --iron-image-height: 170px;
+        }
+        ;
+      }
+
+      paper-card:hover {
+        background: #f5f5f5;
       }
     </style>
     <!--headers='{"cache-control": "max-age=0"}'-->
@@ -114,31 +183,86 @@
         auto-update-date="true" format="yyyy-mm-dd"></app-datepicker>
     </div>
 
+    <div id="selector" class="list">
+      <iron-selector attr-for-selected="name" selected="{{selector}}" fallback-selection="list">
+        <paper-button name="list" tabindex="0" animated="" elevation="0">
+          <iron-icon icon="view-list"></iron-icon>Lista
+        </paper-button>
+        <paper-button name="table" tabindex="0" animated="" elevation="0">
+          <iron-icon icon="view-module"></iron-icon>Grade
+        </paper-button>
+      </iron-selector>
+    </div>
+
     <div class="center">
       <paper-spinner active$="{{loading}}"></paper-spinner>
     </div>
 
-    <template is="dom-if" if="{{hasEvents(lastResponse.events)}}">
-      <p class="center">{{lastResponse.meta.total}} evento(s) encontrado(s)</p>
-    </template>
+    <div class="list">
+      <template is="dom-if" if="{{hasEvents(lastResponse.events)}}">
+        <p class="center">{{lastResponse.meta.total}} evento(s) encontrado(s)</p>
+      </template>
 
-    <template is="dom-if" if="{{!hasEvents(lastResponse.events)}}">
-      <p class="center">Nenhum evento encontrado!</p>
-    </template>
+      <template is="dom-if" if="{{!hasEvents(lastResponse.events)}}">
+        <p class="center">Nenhum evento encontrado!</p>
+      </template>
+    </div>
 
-    <template is="dom-repeat" items="{{lastResponse.events}}" as="blog">
-      <div class="list">
-        <a href="https://www.ufg.br/e/[[blog.slug]]" class="item">
-          <iron-image class="folder" sizing="cover" src$="https://www.ufg.br/[[blog.image]]"></iron-image>
-          <div class="pad">
-            <div class="primary">[[blog.name]]</div>
-            <div class="shortText"><span class="title">Data:</span> [[formatDate(blog.begin_at)]]</div>
-            <div class="shortText" hidden$="[[!blog.end_at]]"><span class="title">Termina:</span> [[formatDate(blog.end_at)]]</div>
-            <div class="shortText"><span class="title">Local:</span> [[blog.place]]</div>
+    <iron-pages attr-for-selected="name" selected="[[selector]]">
+      <div name="list">
+        <template is="dom-repeat" items="{{lastResponse.events}}" as="blog">
+          <div class="list">
+            <a href="https://www.ufg.br/e/[[blog.slug]]" class="item">
+              <iron-image class="folder" sizing="cover" src$="https://www.ufg.br/[[blog.image]]"></iron-image>
+              <div class="pad">
+                <div class="primary">[[blog.name]]</div>
+                <div class="shortText">
+                  <iron-icon class="action" icon="event"></iron-icon>
+                  <span class="title">Início:</span> [[formatDate(blog.begin_at)]]
+                </div>
+                <div class="shortText" hidden$="[[!blog.end_at]]">
+                  <iron-icon class="action" icon="event"></iron-icon>
+                  <span class="title">Termina:</span> [[formatDate(blog.end_at)]]
+                </div>
+                <div class="shortText">
+                  <iron-icon class="action" icon="room"></iron-icon>
+                  <span class="title">Local:</span> [[blog.place]]
+                </div>
+              </div>
+            </a>
           </div>
-        </a>
+        </template>
       </div>
-    </template>
+      <div name="table" class="cards">
+        <template is="dom-repeat" items="{{lastResponse.events}}" as="blog">
+          <paper-card image="https://www.ufg.br/[[blog.image]]" alt="[[blog.name]]">
+            <div class="card-content primary">
+              <a href="https://www.ufg.br/e/[[blog.slug]]" class="primary">
+                [[blog.name]]
+              </a>
+            </div>
+            <div class="card-actions">
+              <a href="https://www.ufg.br/e/[[blog.slug]]">
+                <div class="horizontal justified">
+                  <div class="shortText">
+                    <iron-icon class="action" icon="event"></iron-icon>
+                    <span class="title">Início:</span> [[formatDate(blog.begin_at)]]
+                  </div>
+                  <div class="shortText" hidden$="[[!blog.end_at]]">
+                    <iron-icon class="action" icon="event"></iron-icon>
+                    <span class="title">Termina:</span> [[formatDate(blog.end_at)]]
+                  </div>
+                  <div class="shortText">
+                    <iron-icon class="action" icon="room"></iron-icon>
+                    <span class="title">Local:</span> [[blog.place]]
+                  </div>
+                </div>
+              </a>
+            </div>
+          </paper-card>
+        </template>
+      </div>
+    </iron-pages>
 
 
   </template>
