@@ -55,11 +55,6 @@
         padding-top: 5px;
         max-width: 800px;
         margin: auto;
-        /*@apply --layout-horizontal;
-        @apply(--layout-center-justified);*/
-        /*margin-top: 10px;*/
-        /*margin-bottom: 60px;*/
-        /*border-bottom: 1px solid #ddd;*/
       }
 
       .folder {
@@ -104,7 +99,7 @@
         align-items: center;
       }
 
-      @media (max-width: 600px) {
+      @media (max-width: 640px) {
         .primary {
           font-size: 14px;
         }
@@ -131,6 +126,7 @@
         }
 
         paper-card {
+          margin: 10px;
           max-width: 100% !important;
         }
 
@@ -184,11 +180,11 @@
       }
 
     </style>
-    <!--headers='{"cache-control": "max-age=0"}'-->
-    <iron-ajax id="requestEvents" auto url="https://my-json-proxy.herokuapp.com" loading="{{loading}}" params='[[_getMonthEvents(month)]]'
+    
+    <iron-ajax auto url="https://my-json-proxy.herokuapp.com" loading="{{loading}}" params='[[_getMonthEvents(month)]]'
       last-response="{{eventsResponse}}" on-response="_handleResponse" debounce-duration="300"></iron-ajax>
 
-    <iron-ajax id="request" auto url="https://my-json-proxy.herokuapp.com" loading="{{loading}}" params='{{_getParams(staticDate)}}'
+    <iron-ajax auto url="https://my-json-proxy.herokuapp.com" loading="{{loading}}" params='{{_getParams(staticDate)}}'
       last-response="{{lastResponse}}" debounce-duration="300"></iron-ajax>
 
     <div class="center">
@@ -329,25 +325,19 @@
             });
             self.month = self.$.appDatepicker._activeMonth;
           }, 100);
-
-          // this.$.requestEvents.generateRequest();
         });
       }
 
       _getParams(staticDate) {
-        // this.$.requestEvents.generateRequest();
-        var url = `https://www.ufg.br/events.json?start=${staticDate}&end=${staticDate}&direction=desc&sort=calendar_events.created_at&tags=destaque`;
+        var url = `https://www.ufg.br/events.json?start=${staticDate}&end=${staticDate}&tags=destaque`;
         return { url: url };
       }
 
       _getMonthEvents(month) {
         let year = this.$.appDatepicker._activeYear;
-        // let month = this.$.appDatepicker._activeMonth;
-        // console.log(moment().year(year))
-        //  console.log("mass",moment().year(year).month(month).date(1).format("YYYY-MM-DD"));
         let intDate = moment().year(year).month(month).date(1).format("YYYY-MM-DD");
         let endDate = moment().year(year).month(month).endOf("month").format("YYYY-MM-DD");
-        var url = `https://www.ufg.br/events.json?start=${intDate}&end=${endDate}&tags=destaque&page=1&per_page=50`;
+        var url = `https://www.ufg.br/events.json?start=${intDate}&end=${endDate}&direction=asc&sort=calendar_events.begin_at&tags=destaque&page=1&per_page=50`;
         return { url: url };
       }
 
