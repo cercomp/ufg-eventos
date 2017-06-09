@@ -303,17 +303,18 @@
 
       connectedCallback() {
         super.connectedCallback();
-        console.log(this.rootPath);
-        console.log(this.importPath);
-
+        // console.log(this.rootPath);
+        // console.log(this.importPath);
+        var self = this;
         window.addEventListener('_activeMonthYear', (e) => {
+          setTimeout(function () {
+            window.addEventListener('monthChange', () => {
 
-          window.addEventListener('monthChange', () => {
-
-            this.lastResponse = this.eventsResponse;
-            window.removeEventListener('monthChange', null);
-          });
-          this.month = this.$.appDatepicker._activeMonth;
+              self.lastResponse = self.eventsResponse;
+              window.removeEventListener('monthChange', null);
+            });
+            self.month = self.$.appDatepicker._activeMonth;
+          }, 100);
 
           // this.$.requestEvents.generateRequest();
         });
