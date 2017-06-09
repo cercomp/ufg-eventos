@@ -181,10 +181,10 @@
 
     </style>
     
-    <iron-ajax auto url="https://my-json-proxy.herokuapp.com" loading="{{loading}}" params='[[_getMonthEvents(month)]]'
+    <iron-ajax auto url="[[url]]" loading="{{loading}}" params='[[_getMonthEvents(month)]]'
       last-response="{{eventsResponse}}" on-response="_handleResponse" debounce-duration="300"></iron-ajax>
 
-    <iron-ajax auto url="https://my-json-proxy.herokuapp.com" loading="{{loading}}" params='{{_getParams(staticDate)}}'
+    <iron-ajax auto url="[[url]]" loading="{{loading}}" params='[[_getParams(staticDate)]]'
       last-response="{{lastResponse}}" debounce-duration="300"></iron-ajax>
 
     <div class="center">
@@ -303,6 +303,13 @@
           month: {
             type: String,
             value: moment().month()
+          },
+          url:{
+            type: String,
+            value: ()=> {
+              let url = window.location.hostname;
+              return url.indexOf("ufg.br") > 0 ? url : "https://my-json-proxy.herokuapp.com"
+            }
           }
         };
       }
@@ -342,7 +349,6 @@
       }
 
       formatDate(date) {
-        // console.log(moment("ago de 2014").format('LLLL'))
         return moment(date).format('LLLL');
       }
 
@@ -351,9 +357,9 @@
       }
 
       _handleResponse(e) {
-        // this.lastResponse= e.detail.response;
         window.dispatchEvent(new CustomEvent('monthChange'));
       }
+      
     }
 
     window.customElements.define(UfgEventos.is, UfgEventos);
