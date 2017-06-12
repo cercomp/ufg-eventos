@@ -4,6 +4,8 @@
 
 Webcomponente de eventos da UFG - Universidade Federal de Goiás
 
+[DEMO](https://joserochadocarmo.github.io/ufg-eventos)
+
 Example Usage:
 
 <!--
