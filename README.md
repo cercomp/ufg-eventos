@@ -3,7 +3,9 @@
 # \<ufg-eventos\>
 
 Webcomponente de eventos da UFG - Universidade Federal de Goiás
+
 [DEMO](joserochadocarmo.github.io/ufg-eventos)
+
 Example Usage:
 
 <!--
