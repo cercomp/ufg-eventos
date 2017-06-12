@@ -4,7 +4,7 @@
 
 Webcomponente de eventos da UFG - Universidade Federal de Goiás
 
-[DEMO](joserochadocarmo.github.io/ufg-eventos)
+[DEMO](htts://joserochadocarmo.github.io/ufg-eventos)
 
 Example Usage:
 
