@@ -19,7 +19,7 @@
     <style is="custom-style">
        :host {
         display: block;
-        background-color: var(--event-bg, #fafafa);
+        background-color: var(--event-bg, white);
         font-family: 'Roboto', 'Noto', sans-serif;
         font-size: 14px;
       }
@@ -75,7 +75,7 @@
       }
 
       .primary {
-        font-size: 15px;
+        font-size: 16px;
         font-weight: bold;
         color: #777;
       }
@@ -178,14 +178,13 @@
       paper-card:hover {
         background: #f5f5f5;
       }
-
     </style>
-    
-    <iron-ajax auto url="[[url]]" loading="{{loading}}" params='[[_getMonthEvents(month)]]'
-      last-response="{{eventsResponse}}" on-response="_handleResponse" debounce-duration="300"></iron-ajax>
 
-    <iron-ajax auto url="[[url]]" loading="{{loading}}" params='[[_getParams(staticDate)]]'
-      last-response="{{lastResponse}}" debounce-duration="300"></iron-ajax>
+    <iron-ajax auto url="[[url]]" loading="{{loading}}" params='[[_getMonthEvents(month)]]' last-response="{{eventsResponse}}"
+      on-response="_handleResponse" debounce-duration="300"></iron-ajax>
+
+    <iron-ajax auto url="[[url]]" loading="{{loading}}" params='[[_getParams(staticDate)]]' last-response="{{lastResponse}}"
+      debounce-duration="300"></iron-ajax>
 
     <div class="center">
       <app-datepicker id="appDatepicker" events="{{eventsResponse.events}}" locale="pt-BR" disable-days="[[disableDays]]" date="{{staticDate}}"
@@ -208,11 +207,11 @@
     </div>
 
     <div class="list">
-      <template is="dom-if" if="{{hasEvents(lastResponse.events)}}">
+      <template is="dom-if" if="{{lastResponse.events.length}}">
         <p class="center">{{lastResponse.meta.total}} evento(s) encontrado(s)</p>
       </template>
 
-      <template is="dom-if" if="{{!hasEvents(lastResponse.events)}}">
+      <template is="dom-if" if="{{!lastResponse.events.length}}">
         <p class="center">Nenhum evento encontrado!</p>
       </template>
     </div>
@@ -222,16 +221,18 @@
         <template is="dom-repeat" items="{{lastResponse.events}}" as="blog">
           <div class="list">
             <a href="https://www.ufg.br/e/[[blog.slug]]" class="item">
-              <iron-image class="folder" sizing="cover" src$="https://www.ufg.br/[[blog.image]]"></iron-image>
+              <iron-image class="folder" preload fade sizing="cover" src$="https://www.ufg.br/[[blog.image]]"></iron-image>
               <div class="pad">
                 <div class="primary">[[blog.name]]</div>
                 <div class="shortText">
                   <iron-icon class="action" icon="event"></iron-icon>
-                  <span class="title">Início:</span> [[formatDate(blog.begin_at)]]
+                  <span class="title">Início:</span>
+                  <moment-element datetime="[[blog.begin_at]]" output-format="LLLL"></moment-element>
                 </div>
                 <div class="shortText" hidden$="[[!blog.end_at]]">
                   <iron-icon class="action" icon="event"></iron-icon>
-                  <span class="title">Termina:</span> [[formatDate(blog.end_at)]]
+                  <span class="title">Fim:</span></span>
+                  <moment-element datetime="[[blog.end_at]]" output-format="LLLL"></moment-element>
                 </div>
                 <div class="shortText">
                   <iron-icon class="action" icon="room"></iron-icon>
@@ -245,7 +246,7 @@
       </div>
       <div name="table" class="cards">
         <template is="dom-repeat" items="{{lastResponse.events}}" as="blog">
-          <paper-card image="https://www.ufg.br/[[blog.image]]" alt="[[blog.name]]">
+          <paper-card image="https://www.ufg.br/[[blog.image]]" alt="[[blog.name]]" fade-image="true" >
             <div class="card-content primary">
               <a href="https://www.ufg.br/e/[[blog.slug]]" class="primary">
                 [[blog.name]]
@@ -256,11 +257,13 @@
                 <div class="horizontal justified">
                   <div class="shortText">
                     <iron-icon class="action" icon="event"></iron-icon>
-                    <span class="title">Início:</span> [[formatDate(blog.begin_at)]]
+                    <span class="title">Início:</span>
+                    <moment-element datetime="[[blog.begin_at]]" output-format="LLL"></moment-element>
                   </div>
                   <div class="shortText" hidden$="[[!blog.end_at]]">
                     <iron-icon class="action" icon="event"></iron-icon>
-                    <span class="title">Termina:</span> [[formatDate(blog.end_at)]]
+                    <span class="title">Fim:</span>
+                    <moment-element datetime="[[blog.end_at]]" output-format="LLL"></moment-element>
                   </div>
                   <div class="shortText">
                     <iron-icon class="action" icon="room"></iron-icon>
@@ -304,18 +307,14 @@
             type: String,
             value: moment().month()
           },
-          url:{
+          url: {
             type: String,
-            value: ()=> {
+            value: () => {
               let url = window.location.hostname;
               return url.indexOf("ufg.br") > 0 ? url : "https://my-json-proxy.herokuapp.com"
             }
           }
         };
-      }
-
-      ready() {
-        super.ready();
       }
 
       connectedCallback() {
@@ -348,18 +347,10 @@
         return { url: url };
       }
 
-      formatDate(date) {
-        return moment(date).format('LLLL');
-      }
-
-      hasEvents(events) {
-        return events.length > 0
-      }
-
       _handleResponse(e) {
         window.dispatchEvent(new CustomEvent('monthChange'));
       }
-      
+
     }
 
     window.customElements.define(UfgEventos.is, UfgEventos);
