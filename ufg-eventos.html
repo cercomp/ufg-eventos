@@ -1,7 +1,6 @@
-<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<!--<link rel="import" href="/bower_components/polymer/polymer-element.html">-->
 <link rel="import" href="/bower_components/app-datepicker/app-datepicker.html">
 <link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="/bower_components/iron-image/iron-image.html">
 <link rel="import" href="/bower_components/moment-element/moment-element.html">
 <link rel="import" href="/bower_components/moment-element/moment-with-locales-import.html">
 <link rel="import" href="/bower_components/paper-spinner/paper-spinner.html">
@@ -9,9 +8,9 @@
 <link rel="import" href="/bower_components/paper-button/paper-button.html">
 <link rel="import" href="/bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="/bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="/bower_components/paper-card/paper-card.html">
 <link rel="import" href="/bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
-<link rel="import" href="ufg-time.html">
+<link rel="import" href="/bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="ufg-evento.html">
 
 <dom-module id="ufg-eventos">
   <template>
@@ -26,67 +25,15 @@
 
       app-datepicker {
         margin: 1px 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        display: var(--layout-vertical);
         border: 1px solid #ddd;
-      }
-
-      .item {
-        @apply --layout-horizontal;
-        @apply --layout-flex;
-        padding: 20px;
-        background-color: var(--event-item-bg, white);
-        border: 1px solid #ddd;
-        cursor: pointer;
-        margin-bottom: 10px;
-      }
-
-      .item:hover {
-        background: #f5f5f5;
-      }
-
-      a {
-        text-decoration: none !important;
       }
 
       .list {
         padding-top: 5px;
         max-width: 800px;
         margin: auto;
-      }
-
-      .folder {
-        min-height: 100px;
-        min-width: 100px;
-        box-sizing: border-box;
-        background-color: #DDD;
-      }
-
-      .pad {
-        padding: 0 16px;
-        @apply --layout-flex;
-      }
-
-
-      .pad div {
-        padding: 3px 0;
-      }
-
-      .primary {
-        font-size: 16px;
-        font-weight: bold;
-        color: #777;
-      }
-
-      .shortText {
-        font-size: 13px;
-        color: #888;
-      }
-
-      .title {
-        font-weight: bold;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-justified);
       }
 
       paper-spinner {
@@ -99,51 +46,21 @@
         align-items: center;
       }
 
-      @media (max-width: 640px) {
-        .primary {
-          font-size: 14px;
-        }
-
-        .shortText {
-          font-size: 12px;
-        }
-
-        .item {
-          @apply --layout-vertical;
-          padding: 0px;
-        }
-
-        .pad {
-          padding: 10px 10px;
-        }
-
-        .folder {
-          min-height: 115px;
-        }
-
-        #selector {
-          display: none;
-        }
-
-        paper-card {
-          margin: 10px;
-          max-width: 100% !important;
-        }
-
-        ufg-time {
-          display: none;
-        }
-      }
-
       paper-button {
         color: #666;
         font-weight: bold;
         text-transform: none;
       }
 
+      .controles {
+        width: 512px;
+      }
+
       iron-selector {
-        @apply --layout-horizontal;
+        @apply(--layout-horizontal);
         @apply(--layout-center-justified);
+        flex: 1;
+        margin-left: 50px;
       }
 
       iron-selector paper-button {
@@ -165,20 +82,64 @@
         margin: 0 auto;
       }
 
-      paper-card {
-        margin: 10px;
-        max-width: 31%;
-        --paper-card-header-image: {
-          /*--iron-image-width: 300px;*/
-          --iron-image-height: 130px;
-        }
-        ;
+      .grid {
+        display: flex;
+        max-width: 33%;
       }
 
-      paper-card:hover {
-        background: #f5f5f5;
+      @media (max-width: 640px) {
+        .controles {
+          display: none;
+        }
+
+        .grid {
+          max-width: 100%;
+        }
+      }
+
+      .legenda {
+        @apply(--layout-vertical);
+        color: #666;
+        font-size: 11px;
+      }
+
+      .event-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        align-self: center;
+      }
+
+      .init {
+        background-color: var(--paper-calendar-event-background, rgb(255, 152, 0));
+      }
+
+      .end {
+        background-color: var(--paper-calendar-event-background, lightgray);
+      }
+
+      .ponto {
+        @apply(--layout-horizontal);
+      }
+
+      .about {
+        padding-top: 5px;
+        max-width: 800px;
+        margin: auto;
+        color: white;
+        padding: 6px 0;
+        margin-bottom: -5px;
+      }
+
+      div.about>span {
+        color: #999;
+        font-size: 15px;
+        font-weight: bold;
+        border-bottom: 3px solid steelblue
       }
     </style>
+
+    <iron-media-query id="mediaQuery" query="(max-width: 640px)" on-query-matches-changed="switchQuery"></iron-media-query>
 
     <iron-ajax auto url="[[url]]" loading="{{loading}}" params='[[_getMonthEvents(month)]]' last-response="{{eventsResponse}}"
       on-response="_handleResponse" debounce-duration="300"></iron-ajax>
@@ -191,15 +152,26 @@
         auto-update-date="true" format="yyyy-mm-dd"></app-datepicker>
     </div>
 
-    <div id="selector" class="list">
+    <div class="list controles">
       <iron-selector attr-for-selected="name" selected="{{selector}}" fallback-selection="list">
         <paper-button name="list" tabindex="0" animated="" elevation="0">
           <iron-icon icon="view-list"></iron-icon>Lista
         </paper-button>
-        <paper-button name="table" tabindex="0" animated="" elevation="0">
+        <paper-button name="grid" tabindex="0" animated="" elevation="0">
           <iron-icon icon="view-module"></iron-icon>Grade
         </paper-button>
       </iron-selector>
+      <div class="legenda">
+        <small>Legenda</small>
+        <div class="ponto">
+          <span class="event-dot init"></span>
+          <small>&nbsp;Inícia</small>
+        </div>
+        <div class="ponto">
+          <span class="event-dot end"></span>
+          <small>&nbsp;Andamento</small>
+        </div>
+      </div>
     </div>
 
     <div class="center">
@@ -218,65 +190,49 @@
 
     <iron-pages attr-for-selected="name" selected="[[selector]]">
       <div name="list">
-        <template is="dom-repeat" items="{{lastResponse.events}}" as="blog">
-          <div class="list">
-            <a href="https://www.ufg.br/e/[[blog.slug]]" class="item">
-              <iron-image class="folder" preload fade sizing="cover" src$="https://www.ufg.br/[[blog.image]]"></iron-image>
-              <div class="pad">
-                <div class="primary">[[blog.name]]</div>
-                <div class="shortText">
-                  <iron-icon class="action" icon="event"></iron-icon>
-                  <span class="title">Início:</span>
-                  <moment-element datetime="[[blog.begin_at]]" output-format="LLLL"></moment-element>
-                </div>
-                <div class="shortText" hidden$="[[!blog.end_at]]">
-                  <iron-icon class="action" icon="event"></iron-icon>
-                  <span class="title">Fim:</span></span>
-                  <moment-element datetime="[[blog.end_at]]" output-format="LLLL"></moment-element>
-                </div>
-                <div class="shortText">
-                  <iron-icon class="action" icon="room"></iron-icon>
-                  <span class="title">Local:</span> [[blog.place]]
-                </div>
-              </div>
-              <ufg-time begin="[[blog.begin_at]]" end="[[blog.end_at]]"></ufg-time>
-            </a>
-          </div>
+        <!--filtrar por "hoje"-->
+        <template is="dom-repeat" items="{{lastResponse.events}}" as="blog" filter="_eventIsToday">
+          <template is="dom-if" if="{{!index}}">
+            <div class="about">
+              <span class="primary">Começa hoje</span>
+            </div>
+          </template>
+          <ufg-evento blog="[[blog]]">
+            <div slot="list"></div>
+          </ufg-evento>
         </template>
+        <!--filtrar por "em andamento"-->
+        <template is="dom-repeat" items="{{lastResponse.events}}" as="blog" filter="_eventHappening">
+          <template is="dom-if" if="{{!index}}">
+            <div class="about">
+              <span class="primary">Em andamento</span>
+            </div>
+          </template>
+          <ufg-evento blog="[[blog]]">
+            <div slot="list"></div>
+          </ufg-evento>
+        </template>
+
+        <template is="dom-repeat" items="{{lastResponse.events}}" as="blog" filter="_eventOthers">
+          <template is="dom-if" if="{{!index}}">
+            <div class="about">
+              <span class="primary">Na(s) data(s)</span>
+            </div>
+          </template>
+          <ufg-evento blog="[[blog]]">
+            <div slot="list"></div>
+          </ufg-evento>
+        </template>
+
       </div>
-      <div name="table" class="cards">
+      <div name="grid" class="cards">
         <template is="dom-repeat" items="{{lastResponse.events}}" as="blog">
-          <paper-card image="https://www.ufg.br/[[blog.image]]" alt="[[blog.name]]" fade-image="true" >
-            <div class="card-content primary">
-              <a href="https://www.ufg.br/e/[[blog.slug]]" class="primary">
-                [[blog.name]]
-              </a>
-            </div>
-            <div class="card-actions">
-              <a href="https://www.ufg.br/e/[[blog.slug]]">
-                <div class="horizontal justified">
-                  <div class="shortText">
-                    <iron-icon class="action" icon="event"></iron-icon>
-                    <span class="title">Início:</span>
-                    <moment-element datetime="[[blog.begin_at]]" output-format="LLL"></moment-element>
-                  </div>
-                  <div class="shortText" hidden$="[[!blog.end_at]]">
-                    <iron-icon class="action" icon="event"></iron-icon>
-                    <span class="title">Fim:</span>
-                    <moment-element datetime="[[blog.end_at]]" output-format="LLL"></moment-element>
-                  </div>
-                  <div class="shortText">
-                    <iron-icon class="action" icon="room"></iron-icon>
-                    <span class="title">Local:</span> [[blog.place]]
-                  </div>
-                </div>
-              </a>
-            </div>
-          </paper-card>
+          <ufg-evento blog="[[blog]]" class="grid">
+            <div slot="grid"></div>
+          </ufg-evento>
         </template>
       </div>
     </iron-pages>
-
 
   </template>
 
@@ -311,21 +267,23 @@
             type: String,
             value: () => {
               let url = window.location.hostname;
-              return url.indexOf("ufg.br") > 0 ? url : "https://my-json-proxy.herokuapp.com"
+              return url.indexOf("ufg.br") > 0 ? url + "/events.json" : "https://my-json-proxy.herokuapp.com/events"
             }
+          },
+          today: {
+            type: Object,
+            value: moment()
           }
         };
       }
 
       connectedCallback() {
         super.connectedCallback();
-        // console.log(this.rootPath);
-        // console.log(this.importPath);
         var self = this;
         window.addEventListener('_activeMonthYear', (e) => {
+          self.$.appDatepicker._selectedDate = null;
           setTimeout(function () {
             window.addEventListener('monthChange', () => {
-
               self.lastResponse = self.eventsResponse;
               window.removeEventListener('monthChange', null);
             });
@@ -335,20 +293,39 @@
       }
 
       _getParams(staticDate) {
-        var url = `https://www.ufg.br/events.json?start=${staticDate}&end=${staticDate}&tags=destaque`;
-        return { url: url };
+        return { start: staticDate, end: staticDate, tags: "destaque" };
       }
 
       _getMonthEvents(month) {
         let year = this.$.appDatepicker._activeYear;
         let intDate = moment().year(year).month(month).date(1).format("YYYY-MM-DD");
         let endDate = moment().year(year).month(month).endOf("month").format("YYYY-MM-DD");
-        var url = `https://www.ufg.br/events.json?start=${intDate}&end=${endDate}&direction=asc&sort=calendar_events.begin_at&tags=destaque&page=1&per_page=50`;
-        return { url: url };
+        var url = `start=${intDate}&end=${endDate}&direction=asc&sort=calendar_events.begin_at&tags=destaque&page=1&per_page=50`;
+        return { start: intDate, end: endDate, direction: "asc", sort: "calendar_events.begin_at", tags: "destaque", page: 1, per_page: 50 };
       }
 
       _handleResponse(e) {
         window.dispatchEvent(new CustomEvent('monthChange'));
+      }
+
+      switchQuery(e) {
+        let mobile = this.$.mediaQuery.queryMatches;
+        if (mobile)
+          this.selector = "grid"
+      }
+
+      _eventIsToday(event) {
+        return this.today.isSame(event.begin_at, 'day')
+      }
+
+      _eventHappening(event) {
+        let end_at = event.end_at || event.begin_at;
+        return this.today.isBetween(event.begin_at, end_at, 'day', '(]') 
+      }
+
+      _eventOthers(event) {
+        let end_at = event.end_at || event.begin_at;
+        return !this.today.isSame(event.begin_at, 'day') && !this.today.isBetween(event.begin_at, end_at, 'day','(]');
       }
 
     }

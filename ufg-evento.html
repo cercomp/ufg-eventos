@@ -1,0 +1,196 @@
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
+<link rel="import" href="/bower_components/paper-card/paper-card.html">
+<link rel="import" href="/bower_components/iron-image/iron-image.html">
+<link rel="import" href="/bower_components/moment-element/moment-element.html">
+<link rel="import" href="/bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="ufg-time.html">
+
+<dom-module id="ufg-evento">
+  <template>
+
+    <style is="custom-style">
+
+      .item {
+        @apply --layout-horizontal;
+        @apply --layout-flex;
+        padding: 20px;
+        background-color: var(--event-item-bg, white);
+        border: 1px solid #ddd;
+        cursor: pointer;
+        margin-bottom: 10px;
+      }
+
+      .item:hover {
+        background: #f5f5f5;
+      }
+
+      .item:focus {
+        background: #f5f5f5;
+      }
+
+      .list {
+        padding-top: 5px;
+        max-width: 800px;
+        margin: auto;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-justified);
+      }
+
+      a {
+        text-decoration: none !important;
+      }
+
+      .folder {
+        min-height: 100px;
+        min-width: 100px;
+        box-sizing: border-box;
+        background-color: #DDD;
+      }
+
+      .pad {
+        padding: 0 16px;
+        @apply --layout-flex;
+      }
+
+      .pad div {
+        padding: 3px 0;
+      }
+
+      .primary {
+        font-size: 16px;
+        font-weight: bold;
+        color: #777;
+      }
+
+      .shortText {
+        font-size: 13px;
+        color: #888;
+      }
+
+      .title {
+        font-weight: bold;
+      }
+
+      @media (max-width: 640px) {
+        .primary {
+          font-size: 14px;
+        }
+
+        .shortText {
+          font-size: 12px;
+        }
+
+        paper-card {
+          margin: 10px 0px !important;
+          max-width: 100% !important;
+        }
+      }      
+
+      paper-card {
+        margin: 10px;
+        width: 100%;
+        --paper-card-header-image: {
+          --iron-image-height: 130px;
+        }
+        ;
+      }
+
+      paper-card:hover {
+        background: #f5f5f5;
+      }
+
+    </style>
+    <iron-media-query id="mediaQuery" query="(max-width: 640px)"></iron-media-query>
+    <slot name="grid">
+      <div class="list">
+        <a href="https://www.ufg.br/e/[[blog.slug]]" class="item">
+          <iron-image class="folder" preload fade sizing="cover" src$="https://www.ufg.br/[[blog.image]]"></iron-image>
+          <div class="pad">
+            <div class="primary">[[blog.name]]</div>
+            <div class="shortText">
+              <iron-icon class="action" icon="event"></iron-icon>
+              <span class="title">Início:</span> [[_formatDate(blog.begin_at)]]
+            </div>
+            <div class="shortText" hidden$="[[!blog.end_at]]">
+              <iron-icon class="action" icon="event"></iron-icon>
+              <span class="title">Fim:</span> [[_formatDate(blog.end_at)]]
+            </div>
+            <div class="shortText">
+              <iron-icon class="action" icon="room"></iron-icon>
+              <span class="title">Local:</span> [[blog.place]]
+            </div>
+          </div>
+          <ufg-time begin="[[blog.begin_at]]" end="[[blog.end_at]]"></ufg-time>
+        </a>
+      </div>
+    </slot>
+
+    <slot name="list">
+      <paper-card image="https://www.ufg.br/[[blog.image]]" alt="[[blog.name]]" fade-image="true">
+        <div class="card-content primary">
+          <a href="https://www.ufg.br/e/[[blog.slug]]" class="primary">
+                [[blog.name]]
+              </a>
+        </div>
+        <div class="card-actions">
+          <a href="https://www.ufg.br/e/[[blog.slug]]">
+            <div class="horizontal justified">
+              <div class="shortText">
+                <iron-icon class="action" icon="event"></iron-icon>
+                <span class="title">Início:</span> [[_formatDate(blog.begin_at)]]
+              </div>
+              <div class="shortText" hidden$="[[!blog.end_at]]">
+                <iron-icon class="action" icon="event"></iron-icon>
+                <span class="title">Fim:</span> [[_formatDate(blog.end_at)]]
+              </div>
+              <div class="shortText">
+                <iron-icon class="action" icon="room"></iron-icon>
+                <span class="title">Local:</span> [[blog.place]]
+              </div>
+            </div>
+          </a>
+        </div>
+      </paper-card>
+    </slot>
+
+  </template>
+
+  <script>
+    /**
+     
+     * Mostra eventos
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class UfgEvento extends Polymer.Element {
+      static get is() { return 'ufg-evento'; }
+      static get properties() {
+        return {
+          blog: {
+          }
+        };
+      }
+
+      /**
+      * Formata a apresentação da data.
+      * Se for mobile ou grade mostra de forma diferente.
+      **/
+      _formatDate(date) {
+        if (!date) return;
+        let format = "dddd, D [de] MMMM [de] YYYY";
+        let mobile = this.$.mediaQuery.queryMatches;
+        if (mobile || this.selector == "grid") format = "ddd, D [de] MMMM [de] YYYY";
+        // if (this.selector == "grid") format = "ddd, D [de] MMMM [de] YYYY";
+
+        if (date.indexOf("00:00") < 0) {
+          format += " [às] h:mm";
+        }
+        return moment(date).format(format);
+      }
+    }
+
+    window.customElements.define(UfgEvento.is, UfgEvento);
+  </script>
+</dom-module>
