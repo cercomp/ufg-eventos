@@ -267,7 +267,7 @@
             type: String,
             value: () => {
               let url = window.location.hostname;
-              return url.indexOf("ufg.br") > 0 ? url + "/events.json" : "https://my-json-proxy.herokuapp.com/events"
+              return url.indexOf("ufg.br") > 0 ? "/events.json" : "https://my-json-proxy.herokuapp.com/events"
             }
           },
           today: {
