@@ -293,15 +293,14 @@
       }
 
       _getParams(staticDate) {
-        return { start: staticDate, end: staticDate, tags: "destaque" };
+        return { start: staticDate, end: staticDate};
       }
 
       _getMonthEvents(month) {
         let year = this.$.appDatepicker._activeYear;
         let intDate = moment().year(year).month(month).date(1).format("YYYY-MM-DD");
         let endDate = moment().year(year).month(month).endOf("month").format("YYYY-MM-DD");
-        var url = `start=${intDate}&end=${endDate}&direction=asc&sort=calendar_events.begin_at&tags=destaque&page=1&per_page=50`;
-        return { start: intDate, end: endDate, direction: "asc", sort: "calendar_events.begin_at", tags: "destaque", page: 1, per_page: 50 };
+        return { start: intDate, end: endDate, direction: "asc", sort: "calendar_events.begin_at", page: 1, per_page: 50 };
       }
 
       _handleResponse(e) {
