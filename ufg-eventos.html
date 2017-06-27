@@ -1,15 +1,15 @@
-<!--<link rel="import" href="../polymer/polymer-element.html">-->
-<link rel="import" href="../app-datepicker/app-datepicker.html">
-<link rel="import" href="../iron-ajax/iron-ajax.html">
-<link rel="import" href="../moment-element/moment-element.html">
-<link rel="import" href="../moment-element/moment-with-locales-import.html">
-<link rel="import" href="../paper-spinner/paper-spinner.html">
-<link rel="import" href="../iron-icons/iron-icons.html">
-<link rel="import" href="../paper-button/paper-button.html">
-<link rel="import" href="../iron-selector/iron-selector.html">
-<link rel="import" href="../iron-pages/iron-pages.html">
-<link rel="import" href="../iron-demo-helpers/demo-pages-shared-styles.html">
-<link rel="import" href="../iron-media-query/iron-media-query.html">
+<!--<link rel="import" href="./bower_components/polymer/polymer-element.html">-->
+<link rel="import" href="./bower_components/app-datepicker/app-datepicker.html">
+<link rel="import" href="./bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="./bower_components/moment-element/moment-element.html">
+<link rel="import" href="./bower_components/moment-element/moment-with-locales-import.html">
+<link rel="import" href="./bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="./bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="./bower_components/paper-button/paper-button.html">
+<link rel="import" href="./bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="./bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="./bower_components/iron-demo-helpers/demo-pages-shared-styles.html">
+<link rel="import" href="./bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="ufg-evento.html">
 
 <dom-module id="ufg-eventos">
@@ -201,6 +201,17 @@
             <div slot="list"></div>
           </ufg-evento>
         </template>
+        <!--filtrar por "nas datas"-->
+        <template is="dom-repeat" items="{{lastResponse.events}}" as="blog" filter="_eventOthers">
+          <template is="dom-if" if="{{!index}}">
+            <div class="about">
+              <span class="primary">Na(s) data(s)</span>
+            </div>
+          </template>
+          <ufg-evento blog="[[blog]]">
+            <div slot="list"></div>
+          </ufg-evento>
+        </template>
         <!--filtrar por "em andamento"-->
         <template is="dom-repeat" items="{{lastResponse.events}}" as="blog" filter="_eventHappening">
           <template is="dom-if" if="{{!index}}">
@@ -212,18 +223,6 @@
             <div slot="list"></div>
           </ufg-evento>
         </template>
-
-        <template is="dom-repeat" items="{{lastResponse.events}}" as="blog" filter="_eventOthers">
-          <template is="dom-if" if="{{!index}}">
-            <div class="about">
-              <span class="primary">Na(s) data(s)</span>
-            </div>
-          </template>
-          <ufg-evento blog="[[blog]]">
-            <div slot="list"></div>
-          </ufg-evento>
-        </template>
-
       </div>
       <div name="grid" class="cards">
         <template is="dom-repeat" items="{{lastResponse.events}}" as="blog">
@@ -300,7 +299,7 @@
         let year = this.$.appDatepicker._activeYear;
         let intDate = moment().year(year).month(month).date(1).format("YYYY-MM-DD");
         let endDate = moment().year(year).month(month).endOf("month").format("YYYY-MM-DD");
-        return { start: intDate, end: endDate, direction: "asc", sort: "calendar_events.begin_at", page: 1, per_page: 50 };
+        return { start: intDate, end: endDate, direction: "asc", sort: "calendar_events.begin_at", page: 1, per_page: 100 };
       }
 
       _handleResponse(e) {
