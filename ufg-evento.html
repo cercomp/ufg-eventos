@@ -104,8 +104,8 @@
     <iron-media-query id="mediaQuery" query="(max-width: 640px)"></iron-media-query>
     <slot name="grid">
       <div class="list">
-        <a href="[[rootPath]]/e/[[blog.slug]]" class="item">
-          <iron-image class="folder" preload fade sizing="cover" src$="[[rootPath]][[blog.image]]"></iron-image>
+        <a href="e/[[blog.slug]]" class="item">
+          <iron-image class="folder" preload fade sizing="cover" src$="[[blog.image]]"></iron-image>
           <div class="pad">
             <div class="primary">[[blog.name]]</div>
             <div class="shortText">
@@ -127,14 +127,14 @@
     </slot>
 
     <slot name="list">
-      <paper-card image="[[rootPath]][[blog.image]]" alt="[[blog.name]]" fade-image="true">
+      <paper-card image="[[blog.image]]" alt="[[blog.name]]" fade-image="true">
         <div class="card-content primary">
-          <a href="[[rootPath]]/e/[[blog.slug]]" class="primary">
+          <a href="e/[[blog.slug]]" class="primary">
                 [[blog.name]]
               </a>
         </div>
         <div class="card-actions">
-          <a href="[[rootPath]]/e/[[blog.slug]]">
+          <a href="e/[[blog.slug]]">
             <div class="horizontal justified">
               <div class="shortText">
                 <iron-icon class="action" icon="event"></iron-icon>
