@@ -19,7 +19,10 @@ Example Usage:
 </custom-element-demo>
 ```
 -->
+
 ```html
+<ufg-eventos></ufg-eventos>
+```
 
 ### Instalação
 
@@ -32,31 +35,32 @@ Faça uma cópia do projeto para seu computador
 git clone https://github.com/joserochadocarmo/ufg-eventos.git && cd ufg-eventos
 ```
 
-Agora entre dentro da pasta do projeto execute o comando abaixo para criarmos uma imagem no docker.
+Rode o seguinte comando(não modifique) dentro da pasta, é necessario ter docker instalado:
 
 ```
-docker build -t graphql-ufg .
+docker run --rm -it -v $(pwd):/home/node/app -u node fresnizky/polymer-cli bower install --allow-root
 ```
 
-Agora com a image criada é só rodar o projeto, com o seguinte comando na mesma pasta.
+Pronto! agora é só acessar pelo navegador, procurar pela extensão WebServer, selecionar a pasta do projeto e acessar o IP que está lá, geralmente http://127.0.0.1:8887. Agora é só trabalhar.
+
+### Build
+
+Simples como comprar um Bitcoin, basta rodar o comando abaixo dentro da pasta raiz do projeto.
+Feito o build, ele cria dentro da pasta "copy_my_inner_content" um arquivo chamado ufg-eventos.html.
+Esse arquivo é seu build, basta copiá-lo e colocar em qualquer lugar de qualquer projeto(nginx,apache,angular...).
 
 ```
-docker-compose up -d
+docker run --rm -it -v $(pwd):/home/node/app -u node fresnizky/polymer-cli polymer build
 ```
 
-Pronto, agora é só acessar pelo navegador, bem rápido né?
+### Implantação
 
-Acesse no seu navegador:
-```
-https://localhost:3000/
-```
-docker run --rm -v $(pwd):/home/node/app fresnizky/polymer-cli bower install --allow-root
-
-
-
-O Graphql roda no endpoint /graphql:
-```
-https://localhost:3000/graphql
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.0.1/webcomponents-lite.js"></script>
+<link rel="import" href="https://xxxxx/xxxx/ufg-eventos.html">
 ```
 
-<ufg-eventos></ufg-eventos>
+IMPORTANTE: No nosso caso, vc deve copiar o arquivo de build(ufg-eventos.html) para a pasta docs deste projeto! Porquê? Porque usamos o github como servidor:
+```html
+<link rel="import" href="https://joserochadocarmo.github.io/ufg-eventos/ufg-eventos.html">
+```

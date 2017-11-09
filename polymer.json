@@ -10,7 +10,7 @@
   },
   "builds": [
     {
-      "name": "docs",
+      "name": "copy_my_inner_content",
       "bundle": true,
       "js": {
         "minify": true
