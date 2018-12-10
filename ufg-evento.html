@@ -14,11 +14,12 @@
       .item {
         @apply --layout-horizontal;
         @apply --layout-flex;
-        padding: 20px;
+        /* padding: 20px; */
         background-color: var(--event-item-bg, white);
-        border: 1px solid #ddd;
+        /* border: 1px solid #ddd; */
         cursor: pointer;
         margin-bottom: 10px;
+        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
       }
 
       .item:hover {
@@ -31,7 +32,7 @@
 
       .list {
         padding-top: 5px;
-        max-width: 800px;
+        max-width: 940px;
         margin: auto;
         @apply(--layout-horizontal);
         @apply(--layout-center-justified);
@@ -42,25 +43,46 @@
       }
 
       .folder {
-        min-height: 100px;
-        min-width: 100px;
+        min-height: 236px;
+        min-width: 300px;
         box-sizing: border-box;
         background-color: #DDD;
       }
 
+      ufg-time {
+        padding: 35px 40px 126px;
+      }
+
       .pad {
-        padding: 0 16px;
+        padding: 20px;
         @apply --layout-flex;
       }
 
-      .pad div {
-        padding: 3px 0;
+      .pad div.time {
+        padding: 30px 0px 16px 0px;
+      }
+
+      .pad div.time action {
+        padding-right: 10px;
+      }
+
+      .pad div.local {
+        padding: 0px;
+      }
+      
+      .pad div.local action {
+        padding-right: 10px;
       }
 
       .primary {
-        font-size: 16px;
-        font-weight: bold;
-        color: #777;
+        font-family: Lato;
+        font-size: 24px;
+        font-weight: 300;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: 1.25;
+        letter-spacing: normal;
+        color: #444444;
       }
 
       .shortText {
@@ -85,15 +107,34 @@
           margin: 10px 0px !important;
           max-width: 100% !important;
         }
-      }      
+      }
+
+      .card-content {
+        background: #FFFFFF;
+        border-radius: 20px 20px 4px 4px;
+        padding: 20px 16px;
+      }
+
+      .card-actions {
+        border: none;
+      }
 
       paper-card {
         margin: 10px;
         width: 100%;
         --paper-card-header-image: {
-          --iron-image-height: 130px;
+          --iron-image-height: 180px;
         }
         ;
+
+        --paper-card-header: {
+          position: absolute;
+          top: 0;
+          /* z-index: -1; */
+        };
+        height: 464px;
+        position: relative;
+        padding-top: 164px;
       }
 
       paper-card:hover {
@@ -108,7 +149,7 @@
           <iron-image class="folder" preload fade sizing="cover" src$="[[blog.image]]"></iron-image>
           <div class="pad">
             <div class="primary">[[blog.name]]</div>
-            <div class="shortText">
+            <div class="shortText time">
               <iron-icon class="action" icon="event"></iron-icon>
               <span class="title">Início:</span> [[_formatDate(blog.begin_at)]]
             </div>
@@ -116,7 +157,7 @@
               <iron-icon class="action" icon="event"></iron-icon>
               <span class="title">Fim:</span> [[_formatDate(blog.end_at)]]
             </div>
-            <div class="shortText">
+            <div class="shortText local">
               <iron-icon class="action" icon="room"></iron-icon>
               <span class="title">Local:</span> [[blog.place]]
             </div>

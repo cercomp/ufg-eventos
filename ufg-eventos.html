@@ -23,6 +23,11 @@
         font-size: 14px;
       }
 
+      div.header {
+        position: absolute;
+        top: 0;
+      }
+
       app-datepicker {
         margin: 1px 0;
         border: 1px solid #ddd;
@@ -50,6 +55,10 @@
         color: #666;
         font-weight: bold;
         text-transform: none;
+        border-radius: 50%;
+        min-width: 0px;
+        background: #d8d8d8;
+        /* padding: 0px 10px; */
       }
 
       .controles {
@@ -70,6 +79,9 @@
       iron-selector paper-button.iron-selected {
         opacity: 1;
         box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
+        min-width: 0px;
+        background: var(--app-datepicker-bg);
+        color: #FFFFFF;
         /*color: #009688;*/
       }
 
@@ -124,7 +136,7 @@
 
       .about {
         padding-top: 5px;
-        max-width: 800px;
+        max-width: 940px;
         margin: auto;
         color: white;
         padding: 6px 0;
@@ -155,10 +167,10 @@
     <div class="list controles">
       <iron-selector attr-for-selected="name" selected="{{selector}}" fallback-selection="list">
         <paper-button name="list" tabindex="0" animated="" elevation="0">
-          <iron-icon icon="view-list"></iron-icon>Lista
+          <iron-icon icon="view-list"></iron-icon>
         </paper-button>
         <paper-button name="grid" tabindex="0" animated="" elevation="0">
-          <iron-icon icon="view-module"></iron-icon>Grade
+          <iron-icon icon="view-module"></iron-icon>
         </paper-button>
       </iron-selector>
       <div class="legenda">
@@ -178,9 +190,9 @@
       <paper-spinner active$="{{loading}}"></paper-spinner>
     </div>
 
-    <div class="list">
+    <div class="about" style="color: #333333; font-size: 20px;">
       <template is="dom-if" if="{{lastResponse.events.length}}">
-        <p class="center">{{lastResponse.meta.total}} evento(s) encontrado(s)</p>
+        <p>{{lastResponse.meta.total}} evento(s) encontrado(s)</p>
       </template>
 
       <template is="dom-if" if="{{!lastResponse.events.length}}">
@@ -193,9 +205,9 @@
         <!--filtrar por "hoje"-->
         <template is="dom-repeat" items="{{lastResponse.events}}" as="blog" filter="_eventIsToday">
           <template is="dom-if" if="{{!index}}">
-            <div class="about">
+            <!-- <div class="about">
               <span class="primary">Começa hoje</span>
-            </div>
+            </div> -->
           </template>
           <ufg-evento blog="[[blog]]">
             <div slot="list"></div>
@@ -204,9 +216,9 @@
         <!--filtrar por "nas datas"-->
         <template is="dom-repeat" items="{{lastResponse.events}}" as="blog" filter="_eventOthers">
           <template is="dom-if" if="{{!index}}">
-            <div class="about">
+            <!-- <div class="about">
               <span class="primary">Na(s) data(s)</span>
-            </div>
+            </div> -->
           </template>
           <ufg-evento blog="[[blog]]">
             <div slot="list"></div>
@@ -215,9 +227,9 @@
         <!--filtrar por "em andamento"-->
         <template is="dom-repeat" items="{{lastResponse.events}}" as="blog" filter="_eventHappening">
           <template is="dom-if" if="{{!index}}">
-            <div class="about">
+            <!-- <div class="about">
               <span class="primary">Em andamento</span>
-            </div>
+            </div> -->
           </template>
           <ufg-evento blog="[[blog]]">
             <div slot="list"></div>
@@ -266,7 +278,7 @@
             type: String,
             value: () => {
               let url = window.location.hostname;
-              return url.indexOf("ufg.br") > 0 ? "/events.json" : "https://my-json-proxy.herokuapp.com/events"
+              return url.indexOf("ufg.br") > 0 ? "/events.json" : "/events.json"
             }
           },
           today: {
