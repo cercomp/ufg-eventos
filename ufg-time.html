@@ -79,18 +79,18 @@
       }
     </style>
     <template is="dom-if" if="{{!end}}">
-      <div class="center">
+      <div>
         <div class="calendar-icon">
-        <div class="calendar-icon__day">
-          <moment-element datetime="[[begin]]" output-format="DD"></moment-element>
-        </div>
-        <div class="calendar-icon__month">
-          <moment-element datetime="[[begin]]" output-format="MMM">
+          <div class="calendar-icon__day">
+            <moment-element datetime="[[begin]]" output-format="DD"></moment-element>
+          </div>
+          <div class="calendar-icon__month">
+            <moment-element datetime="[[begin]]" output-format="MMM">
+          </div>
         </div>
       </div>
-      </div>
-      
     </template>
+
     <template is="dom-if" if="{{end}}">
       <div class="calendar-icon-double">
         <div class="calendar-icon calendar-icon--first">
